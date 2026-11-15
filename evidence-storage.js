@@ -111,7 +111,7 @@ async function importBackup(file){
   const data=JSON.parse(await file.text());
   if(data.format!=='portfolio-evidence-backup'||data.version!==1||!data.entries||typeof data.entries!=='object'||Array.isArray(data.entries))throw Error('Invalid backup');
   const entries=Object.entries(data.entries);
-  if(!entries.length||entries.length>500||entries.some(([k,v])=>!/^evidence:[^:]+:\\d+$/.test(k)||!Array.isArray(v)||v.length>100||v.some(x=>!x||typeof x.src!=='string'||!/^data:image\\//.test(x.src))))throw Error('Invalid entries');
+  if(!entries.length||entries.length>500||entries.some(([k,v])=>!/^evidence:[^:]+:\d+$/.test(k)||!Array.isArray(v)||v.length>100||v.some(x=>!x||typeof x.src!=='string'||!/^data:image\//.test(x.src))))throw Error('Invalid entries');
   if(!confirm('سيتم استيراد الشواهد من النسخة الاحتياطية إلى هذا المتصفح. ستُستبدل الشواهد في المربعات المطابقة. هل تريدين المتابعة؟'))return;
   const d=await db();
   await new Promise((resolve,reject)=>{
