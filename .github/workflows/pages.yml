@@ -35,7 +35,7 @@ jobs:
               s = s.replace(old, new, 1)
               s = s.replace('.nav.open{transform:translateX(0)}', '.nav.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0008}', 1)
           import re
-          inject = '<link rel="stylesheet" href="evidence-storage.css?v=9"><script src="evidence-storage.js?v=9" defer></script>'
+          inject = '<link rel="stylesheet" href="evidence-storage.css?v=10"><script src="evidence-storage.js?v=10" defer></script>'
           s, count = re.subn(r'</body\s*>', lambda m: inject + m.group(0), s, count=1, flags=re.I)
           if count != 1:
               s, count = re.subn(r'</html\s*>', lambda m: inject + m.group(0), s, count=1, flags=re.I)
