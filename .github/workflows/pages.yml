@@ -23,6 +23,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Fix sidebar overlay on mobile
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'box-shadow:0 0 0 100vmax #0008;transform:translateX(110%)'
+          new = 'box-shadow:none;transform:translateX(110%)'
+          if old not in s:
+              raise SystemExit('Sidebar style not found: stopping to avoid unsafe modification')
+          s = s.replace(old, new, 1)
+          s = s.replace('.nav.open{transform:translateX(0)}', '.nav.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0008}', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
