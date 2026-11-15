@@ -44,3 +44,10 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot .evidence-tile>img{touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;-webkit-user-drag:none!important;will-change:transform}
 .slot .evidence-tile{overflow:hidden!important}
 @media print{.slot .evidence-tile-tools,.slot .evidence-tools{display:none!important}}
+
+/* Touch editing is enabled: hide legacy zoom buttons and show delete only on selection. */
+.slot .evidence-tile-tools{display:none!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.slot .evidence-tile .evidence-mini:not(.evidence-delete){display:none!important}
+.slot .evidence-tile.evidence-selected .evidence-tile-tools{display:flex!important}
+.slot .evidence-tile.evidence-selected .evidence-delete{display:block!important;background:#fff!important;border:1px solid #b13b3b!important;border-radius:6px!important;color:#a12727!important}
+@media print{.slot .evidence-tile-tools{display:none!important}}
