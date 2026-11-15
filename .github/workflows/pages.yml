@@ -35,6 +35,7 @@ jobs:
               raise SystemExit('Sidebar style not found: stopping to avoid unsafe modification')
           s = s.replace(old, new, 1)
           s = s.replace('.nav.open{transform:translateX(0)}', '.nav.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0008}', 1)
+          s = s.replace('</body>', '<link rel="stylesheet" href="evidence-storage.css"><script src="evidence-storage.js" defer></script></body>', 1)
           p.write_text(s, encoding='utf-8')
           PY
       - name: Configure Pages
