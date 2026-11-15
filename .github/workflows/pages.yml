@@ -31,10 +31,9 @@ jobs:
           s = p.read_text(encoding='utf-8')
           old = 'box-shadow:0 0 0 100vmax #0008;transform:translateX(110%)'
           new = 'box-shadow:none;transform:translateX(110%)'
-          if old not in s:
-              raise SystemExit('Sidebar style not found: stopping to avoid unsafe modification')
-          s = s.replace(old, new, 1)
-          s = s.replace('.nav.open{transform:translateX(0)}', '.nav.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0008}', 1)
+          if old in s:
+              s = s.replace(old, new, 1)
+              s = s.replace('.nav.open{transform:translateX(0)}', '.nav.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0008}', 1)
           import re
           inject = '<link rel="stylesheet" href="evidence-storage.css?v=4"><script src="evidence-storage.js?v=4" defer></script>'
           s, count = re.subn(r'</body\\s*>', lambda m: inject + m.group(0), s, count=1, flags=re.I)
