@@ -31,3 +31,11 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot .evidence-tools{gap:3px;flex-wrap:wrap;max-width:95%}
 .slot .evidence-add-barcode{background:#fffef4}
 @media print{.slot.empty .evidence-tools,.slot.evidence-editing .evidence-tools{display:none!important}}
+
+/* Visible editing controls on iPhone: no tap-to-reveal required. */
+.slot .evidence-gallery{inset:0!important;width:100%!important;height:100%!important;max-width:100%!important;overflow:hidden!important}
+.slot .evidence-tile{max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+.slot .evidence-tile-tools{display:flex!important;bottom:3px!important;left:50%!important;transform:translateX(-50%)!important;z-index:40!important;background:#ffffffeb;border:1px solid #c7a052;border-radius:6px;padding:2px;box-shadow:0 1px 4px #0003}
+.slot .evidence-mini{min-width:28px!important;min-height:27px!important;font:bold 17px Arial!important;touch-action:manipulation}
+.slot .evidence-tile>img{max-width:100%!important;max-height:100%!important}
+@media print{.slot .evidence-tile-tools{display:none!important}}
