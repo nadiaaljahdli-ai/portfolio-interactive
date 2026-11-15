@@ -45,6 +45,10 @@ async function initSlot(slot){
  const s={slot,input,key:keyFor(slot),items:[],rendering:false};states.set(slot,s);
  input.addEventListener('change',()=>{const files=Array.from(input.files||[]);input.value='';addFiles(s,files);});
  slot.append(input);
+ slot.addEventListener('click',e=>{
+   if(e.target.closest('button,.evidence-tile-tools,.evidence-tools'))return;
+   e.preventDefault();e.stopImmediatePropagation();input.click();
+ },true);
  try{s.items=normalize(await read(s.key));}catch(e){console.warn('Cannot load evidence',e);}
  const existing=Array.from(slot.children).filter(n=>n.tagName==='IMG'&&n.src?.startsWith('data:image/'));
  for(const img of existing){if(!s.items.some(x=>x.src===img.src))s.items.push({src:img.src,scale:100});img.remove();}
