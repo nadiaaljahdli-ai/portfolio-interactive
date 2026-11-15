@@ -24,7 +24,7 @@ function render(s){
    const img=document.createElement('img');img.src=item.src;img.alt=(item.kind==='barcode'?'باركود ':'شاهد ')+(i+1);img.style.transform='translate('+ (item.x||0) +'px,'+(item.y||0)+'px) scale('+(item.scale/100)+')';tile.append(img);
    attachTouch(img,item,s);
    const tools=document.createElement('div');tools.className='evidence-tile-tools';
-   tools.append(button('−',()=>resize(s,i,-10),'evidence-mini'),button('+',()=>resize(s,i,10),'evidence-mini'),button('×',()=>{s.items.splice(i,1);render(s);save(s);},'evidence-mini evidence-delete'));
+   tools.append(button('×',()=>{s.items.splice(i,1);render(s);save(s);},'evidence-mini evidence-delete'));
    tile.append(tools);gallery.append(tile);
  });
  const bar=document.createElement('div');bar.className='evidence-tools';
