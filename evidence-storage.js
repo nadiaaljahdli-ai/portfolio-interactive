@@ -97,12 +97,8 @@ async function exportBackup(){
   if(!count){alert('لا توجد صور أو باركودات محفوظة في هذا المتصفح. افتحي النسخة التي تحتوي على شواهدك.');return;}
   const blob=new Blob([JSON.stringify({format:'portfolio-evidence-backup',version:1,created:new Date().toISOString(),entries})],{type:'application/json'});
   const file=new File([blob],'شواهد-ملف-الإنجاز.json',{type:'application/json'});
-  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-   try{await navigator.share({files:[file],title:'نسخة احتياطية لشواهد الإنجاز'});return;}
-   catch(err){if(err.name==='AbortError')return;}
-  }
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-  alert('تم تجهيز النسخة الاحتياطية. احتفظي بها في تطبيق الملفات ثم افتحي الموقع في Safari لاستيرادها.');
+  alert('تم طلب تنزيل ملف شواهد-ملف-الإنجاز.json. افتحي التنزيلات للتحقق من حفظه، ثم استورديه في Safari.');
  }catch(err){console.error(err);alert('تعذر تصدير النسخة الاحتياطية.');}
 }
 async function importBackup(file){
