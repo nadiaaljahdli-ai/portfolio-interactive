@@ -61,3 +61,9 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot.evidence-editing .evidence-tools{display:flex!important}
 .slot .evidence-add{font-size:10px!important;padding:2px 4px!important;white-space:nowrap!important}
 @media print{.slot .evidence-tools{display:none!important}}
+
+/* Fix inner-pocket clipping: only the outer gold slot clips, not individual image cells. */
+.slot .evidence-gallery{overflow:visible!important}
+.slot .evidence-tile{overflow:visible!important;isolation:auto!important}
+.slot .evidence-tile>img{overflow:visible!important}
+.slot{overflow:hidden!important}
