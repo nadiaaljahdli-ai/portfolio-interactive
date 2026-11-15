@@ -8,7 +8,7 @@ async function read(k){const d=await db();return new Promise((ok,no)=>{const r=d
 async function write(k,v){const d=await db();return new Promise((ok,no)=>{const t=d.transaction(STORE,'readwrite');t.objectStore(STORE).put(v,k);t.oncomplete=ok;t.onerror=()=>no(t.error);});}
 const states=new WeakMap();
 function keyFor(slot){const page=slot.closest('[data-page],.page,.sheet,section')||slot.parentElement;const id=page?.getAttribute('data-page')||page?.id||'page';return 'evidence:'+id+':'+Array.from(page.querySelectorAll('.slot')).indexOf(slot);}
-function normalize(value){if(Array.isArray(value))return value.filter(x=>x&&typeof x.src==='string').map(x=>({src:x.src,scale:Math.max(45,Math.min(180,Number(x.scale)||100))}));if(typeof value==='string'&&value.startsWith('data:image/'))return [{src:value,scale:100}];return [];}
+function normalize(value){if(Array.isArray(value))return value.filter(x=>x&&typeof x.src==='string').map(x=>({src:x.src,scale:Math.max(45,Math.min(180,Number(x.scale)||100)),kind:x.kind==='barcode'?'barcode':'image'}));if(typeof value==='string'&&value.startsWith('data:image/'))return [{src:value,scale:100}];return [];}
 function button(label,action,cls){const b=document.createElement('button');b.type='button';b.textContent=label;b.className=cls||'evidence-control';b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();action();});return b;}
 async function save(s){try{await write(s.key,s.items);}catch(e){console.warn('Evidence save failed',e);alert('تعذر حفظ الصور على الجهاز. تحققي من مساحة التخزين.');}}
 function render(s){
@@ -17,37 +17,38 @@ function render(s){
  slot.querySelectorAll('.evidence-gallery,.evidence-tools,.evidence-remove').forEach(n=>n.remove());
  slot.querySelectorAll('button').forEach(n=>{if(n.textContent.includes('حذف الصورة'))n.remove();});
  const original=slot.querySelector('span');if(original)original.style.display=s.items.length?'none':'';
- if(!s.items.length){slot.classList.add('empty');s.rendering=false;return;}
- slot.classList.remove('empty');
+ if(!s.items.length)slot.classList.add('empty');else slot.classList.remove('empty');
  const gallery=document.createElement('div');gallery.className='evidence-gallery';
  s.items.forEach((item,i)=>{
-   const tile=document.createElement('div');tile.className='evidence-tile';tile.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');});
-   const img=document.createElement('img');img.src=item.src;img.alt='شاهد '+(i+1);img.style.transform='scale('+(item.scale/100)+')';tile.append(img);
+   const tile=document.createElement('div');tile.className='evidence-tile'+(item.kind==='barcode'?' evidence-barcode':'');tile.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');});
+   const img=document.createElement('img');img.src=item.src;img.alt=(item.kind==='barcode'?'باركود ':'شاهد ')+(i+1);img.style.transform='scale('+(item.scale/100)+')';tile.append(img);
    const tools=document.createElement('div');tools.className='evidence-tile-tools';
    tools.append(button('−',()=>resize(s,i,-10),'evidence-mini'),button('+',()=>resize(s,i,10),'evidence-mini'),button('×',()=>{s.items.splice(i,1);render(s);save(s);},'evidence-mini evidence-delete'));
    tile.append(tools);gallery.append(tile);
  });
  const bar=document.createElement('div');bar.className='evidence-tools';
- bar.append(button('+ صورة',()=>s.input.click(),'evidence-add'));
+ bar.append(button('+ صورة',()=>s.input.click(),'evidence-add'),button('+ باركود',()=>s.barcodeInput.click(),'evidence-add evidence-add-barcode'));
  slot.append(gallery,bar);
  s.rendering=false;
 }
 function resize(s,i,delta){s.items[i].scale=Math.max(45,Math.min(180,s.items[i].scale+delta));render(s);save(s);}
-async function addFiles(s,files){
+async function addFiles(s,files,kind='image'){
  for(const file of files){if(!file.type.startsWith('image/'))continue;
    const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsDataURL(file);});
-   s.items.push({src:data,scale:100});
+   s.items.push({src:data,scale:100,kind});
  }
  render(s);await save(s);
 }
 async function initSlot(slot){
  if(states.has(slot))return;
  const input=document.createElement('input');input.type='file';input.accept='image/*';input.multiple=true;input.hidden=true;
- const s={slot,input,key:keyFor(slot),items:[],rendering:false};states.set(slot,s);
+ const barcodeInput=document.createElement('input');barcodeInput.type='file';barcodeInput.accept='image/*';barcodeInput.multiple=true;barcodeInput.hidden=true;
+ const s={slot,input,barcodeInput,key:keyFor(slot),items:[],rendering:false};states.set(slot,s);
  input.addEventListener('change',()=>{const files=Array.from(input.files||[]);input.value='';addFiles(s,files);});
- slot.append(input);
+ barcodeInput.addEventListener('change',()=>{const files=Array.from(barcodeInput.files||[]);barcodeInput.value='';addFiles(s,files,'barcode');});
+ slot.append(input,barcodeInput);
  slot.addEventListener('click',e=>{
-   if(e.target===input||e.target.closest('.evidence-tools,.evidence-tile-tools'))return;
+   if(e.target===input||e.target===barcodeInput||e.target.closest('.evidence-tools,.evidence-tile-tools'))return;
    e.preventDefault();e.stopImmediatePropagation();
    const tile=e.target.closest('.evidence-tile');
    if(tile){slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');return;}
