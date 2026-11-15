@@ -1,1 +1,7 @@
 .slot .evidence-remove{position:absolute;top:6px;left:6px;z-index:20;border:1px solid #b13b3b;background:#fff;color:#9a2525;border-radius:7px;padding:5px 9px;font:600 13px Arial,sans-serif;cursor:pointer;box-shadow:0 2px 8px #0003}.slot .evidence-remove:hover{background:#fff0f0}@media print{.evidence-remove{display:none!important}}
+/* Assessment evidence frames: keep overlays inside the two original gold boxes. */
+section[id^="p"] .paper:has(> .slot){position:relative!important}
+section[id^="p"] .paper > .slot{position:absolute!important;top:34%!important;width:40%!important;height:26%!important;box-sizing:border-box!important;overflow:hidden!important;z-index:5}
+section[id^="p"] .paper > .slot.right{left:auto!important;right:5%!important}
+section[id^="p"] .paper > .slot.left{right:auto!important;left:5%!important}
+section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:100%!important;object-fit:contain!important}
