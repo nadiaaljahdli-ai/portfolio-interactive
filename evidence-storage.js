@@ -8,7 +8,7 @@ async function read(k){const d=await db();return new Promise((ok,no)=>{const r=d
 async function write(k,v){const d=await db();return new Promise((ok,no)=>{const t=d.transaction(STORE,'readwrite');t.objectStore(STORE).put(v,k);t.oncomplete=ok;t.onerror=()=>no(t.error);});}
 const states=new WeakMap();
 function keyFor(slot){const page=slot.closest('[data-page],.page,.sheet,section')||slot.parentElement;const id=page?.getAttribute('data-page')||page?.id||'page';return 'evidence:'+id+':'+Array.from(page.querySelectorAll('.slot')).indexOf(slot);}
-function normalize(value){if(Array.isArray(value))return value.filter(x=>x&&typeof x.src==='string').map(x=>({src:x.src,scale:Math.max(45,Math.min(180,Number(x.scale)||100)),kind:x.kind==='barcode'?'barcode':'image'}));if(typeof value==='string'&&value.startsWith('data:image/'))return [{src:value,scale:100}];return [];}
+function normalize(value){if(Array.isArray(value))return value.filter(x=>x&&typeof x.src==='string').map(x=>({src:x.src,scale:Math.max(45,Math.min(180,Number(x.scale)||100)),kind:x.kind==='barcode'?'barcode':'image',x:Number(x.x)||0,y:Number(x.y)||0}));if(typeof value==='string'&&value.startsWith('data:image/'))return [{src:value,scale:100}];return [];}
 function button(label,action,cls){const b=document.createElement('button');b.type='button';b.textContent=label;b.className=cls||'evidence-control';b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();action();});return b;}
 async function save(s){try{await write(s.key,s.items);}catch(e){console.warn('Evidence save failed',e);alert('تعذر حفظ الصور على الجهاز. تحققي من مساحة التخزين.');}}
 function render(s){
@@ -21,7 +21,8 @@ function render(s){
  const gallery=document.createElement('div');gallery.className='evidence-gallery';
  s.items.forEach((item,i)=>{
    const tile=document.createElement('div');tile.className='evidence-tile'+(item.kind==='barcode'?' evidence-barcode':'');tile.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');});
-   const img=document.createElement('img');img.src=item.src;img.alt=(item.kind==='barcode'?'باركود ':'شاهد ')+(i+1);img.style.transform='scale('+(item.scale/100)+')';tile.append(img);
+   const img=document.createElement('img');img.src=item.src;img.alt=(item.kind==='barcode'?'باركود ':'شاهد ')+(i+1);img.style.transform='translate('+ (item.x||0) +'px,'+(item.y||0)+'px) scale('+(item.scale/100)+')';tile.append(img);
+   attachTouch(img,item,s);
    const tools=document.createElement('div');tools.className='evidence-tile-tools';
    tools.append(button('−',()=>resize(s,i,-10),'evidence-mini'),button('+',()=>resize(s,i,10),'evidence-mini'),button('×',()=>{s.items.splice(i,1);render(s);save(s);},'evidence-mini evidence-delete'));
    tile.append(tools);gallery.append(tile);
@@ -31,11 +32,23 @@ function render(s){
  slot.append(gallery,bar);
  s.rendering=false;
 }
+function attachTouch(img,item,s){
+ let start=null,changed=false;
+ const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+ img.addEventListener('touchstart',e=>{if(!e.touches.length)return;start={x:e.touches[0].clientX,y:e.touches[0].clientY,scale:item.scale,ox:item.x||0,oy:item.y||0,d:e.touches.length>1?dist(e.touches):0};changed=false;},{passive:true});
+ img.addEventListener('touchmove',e=>{if(!start)return;e.preventDefault();changed=true;
+ if(e.touches.length>1){if(!start.d){start.d=dist(e.touches);start.scale=item.scale;}item.scale=Math.max(45,Math.min(250,Math.round(start.scale*dist(e.touches)/Math.max(1,start.d))));}
+ else if(!start.d){item.x=Math.max(-120,Math.min(120,start.ox+e.touches[0].clientX-start.x));item.y=Math.max(-120,Math.min(120,start.oy+e.touches[0].clientY-start.y));}
+ img.style.transform='translate('+(item.x||0)+'px,'+(item.y||0)+'px) scale('+(item.scale/100)+')';
+ },{passive:false});
+ img.addEventListener('touchend',()=>{if(changed)save(s);if(!imgTouchesRemaining())start=null;},{passive:true});
+ function imgTouchesRemaining(){return false;}
+}
 function resize(s,i,delta){s.items[i].scale=Math.max(45,Math.min(180,s.items[i].scale+delta));render(s);save(s);}
 async function addFiles(s,files,kind='image'){
  for(const file of files){if(!file.type.startsWith('image/'))continue;
    const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsDataURL(file);});
-   s.items.push({src:data,scale:100,kind});
+   s.items.push({src:data,scale:100,kind,x:0,y:0});
  }
  render(s);await save(s);
 }
