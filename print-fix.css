@@ -8,5 +8,10 @@
  section[id^="p"] .paper{position:relative!important;box-sizing:border-box!important;width:158mm!important;height:230mm!important;max-height:230mm!important;margin:0 auto!important;padding:0!important;box-shadow:none!important;overflow:hidden!important;break-inside:avoid!important}
  section[id^="p"] .paper > img:first-child{display:block!important;width:100%!important;height:100%!important;object-fit:fill!important}
  section[id^="p"] .paper > .slot{overflow:hidden!important}
+
+ section[id^="p"] .paper > .slot{display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;z-index:30!important}
+ section[id^="p"] .paper > .slot .evidence-gallery{display:flex!important;visibility:visible!important;opacity:1!important;position:absolute!important;inset:0!important;z-index:31!important}
+ section[id^="p"] .paper > .slot .evidence-tile{display:flex!important;visibility:visible!important;opacity:1!important}
+ section[id^="p"] .paper > .slot .evidence-tile > img{display:block!important;visibility:visible!important;opacity:1!important;max-width:100%!important;max-height:100%!important;-webkit-print-color-adjust:exact!important}
  section[id^="p"]:last-of-type{break-after:auto!important;page-break-after:auto!important}
 }
