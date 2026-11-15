@@ -20,7 +20,7 @@ function render(s){
  slot.classList.remove('empty');
  const gallery=document.createElement('div');gallery.className='evidence-gallery';
  s.items.forEach((item,i)=>{
-   const tile=document.createElement('div');tile.className='evidence-tile';
+   const tile=document.createElement('div');tile.className='evidence-tile';tile.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');});
    const img=document.createElement('img');img.src=item.src;img.alt='شاهد '+(i+1);img.style.transform='scale('+(item.scale/100)+')';tile.append(img);
    const tools=document.createElement('div');tools.className='evidence-tile-tools';
    tools.append(button('−',()=>resize(s,i,-10),'evidence-mini'),button('+',()=>resize(s,i,10),'evidence-mini'),button('×',()=>{s.items.splice(i,1);render(s);save(s);},'evidence-mini evidence-delete'));
@@ -46,7 +46,7 @@ async function initSlot(slot){
  input.addEventListener('change',()=>{const files=Array.from(input.files||[]);input.value='';addFiles(s,files);});
  slot.append(input);
  slot.addEventListener('click',e=>{
-   if(e.target===input||e.target.closest('button,.evidence-tile-tools,.evidence-tools'))return;
+   if(e.target===input||e.target.closest('button,.evidence-tile,.evidence-tile-tools,.evidence-tools'))return;
    e.preventDefault();e.stopImmediatePropagation();input.click();
  },true);
  try{s.items=normalize(await read(s.key));}catch(e){console.warn('Cannot load evidence',e);}
@@ -63,6 +63,7 @@ async function initSlot(slot){
  observer.observe(slot,{childList:true});
 }
 function scan(){document.querySelectorAll('.slot').forEach(initSlot);}
+document.addEventListener('click',e=>{if(!e.target.closest('.slot'))document.querySelectorAll('.slot.evidence-editing').forEach(s=>{s.classList.remove('evidence-editing');s.querySelectorAll('.evidence-selected').forEach(t=>t.classList.remove('evidence-selected'));});});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
 new MutationObserver(()=>scan()).observe(document.documentElement,{childList:true,subtree:true});
 })();
