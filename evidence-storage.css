@@ -51,3 +51,13 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot .evidence-tile.evidence-selected .evidence-tile-tools{display:flex!important}
 .slot .evidence-tile.evidence-selected .evidence-delete{display:block!important;background:#fff!important;border:1px solid #b13b3b!important;border-radius:6px!important;color:#a12727!important}
 @media print{.slot .evidence-tile-tools{display:none!important}}
+
+/* Flush QR artwork into original gold frame; no nested white card or protruding toolbar. */
+.slot .evidence-barcode{background:transparent!important;padding:0!important;border:0!important;box-shadow:none!important}
+.slot .evidence-gallery,.slot .evidence-tile{background:transparent!important;border:0!important;box-shadow:none!important}
+.slot .evidence-tools{top:4px!important;right:4px!important;left:auto!important;max-width:calc(100% - 8px)!important;transform:none!important}
+.slot:not(.empty):not(.evidence-editing) .evidence-tools{display:none!important}
+.slot.empty .evidence-tools{display:flex!important}
+.slot.evidence-editing .evidence-tools{display:flex!important}
+.slot .evidence-add{font-size:10px!important;padding:2px 4px!important;white-space:nowrap!important}
+@media print{.slot .evidence-tools{display:none!important}}
