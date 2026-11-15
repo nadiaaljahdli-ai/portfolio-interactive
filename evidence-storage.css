@@ -5,3 +5,13 @@ section[id^="p"] .paper > .slot{position:absolute!important;top:34%!important;wi
 section[id^="p"] .paper > .slot.right{left:auto!important;right:5%!important}
 section[id^="p"] .paper > .slot.left{right:auto!important;left:5%!important}
 section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:100%!important;object-fit:contain!important}
+
+.slot .evidence-gallery{position:absolute;inset:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3px;padding:3px;box-sizing:border-box;z-index:6;overflow:hidden;direction:rtl}
+.slot .evidence-tile{position:relative;flex:1 1 0;min-width:0;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.slot .evidence-tile>img{width:100%!important;height:100%!important;object-fit:contain!important;display:block!important}
+.slot .evidence-tile-tools{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);display:flex;gap:2px;z-index:8}
+.slot .evidence-mini{border:0;border-radius:4px;background:#fffef0e8;color:#17375a;font:bold 12px Arial;padding:3px 6px;min-width:23px;cursor:pointer}
+.slot .evidence-delete{color:#a12727}
+.slot .evidence-tools{position:absolute;top:2px;right:2px;z-index:9}
+.slot .evidence-add{background:#fff;border:1px solid #c8a252;border-radius:5px;padding:3px 6px;color:#153654;font:bold 11px Arial;cursor:pointer}
+@media print{.slot .evidence-tile-tools,.slot .evidence-tools{display:none!important}}
