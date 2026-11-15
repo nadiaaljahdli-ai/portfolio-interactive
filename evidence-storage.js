@@ -47,7 +47,7 @@ async function initSlot(slot){
  input.addEventListener('change',()=>{const files=Array.from(input.files||[]);input.value='';addFiles(s,files);});
  slot.append(input);
  slot.addEventListener('click',e=>{
-   if(e.target===input)return;
+   if(e.target===input||e.target.closest('.evidence-tools,.evidence-tile-tools'))return;
    e.preventDefault();e.stopImmediatePropagation();
    const tile=e.target.closest('.evidence-tile');
    if(tile){slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');return;}
