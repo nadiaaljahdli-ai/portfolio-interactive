@@ -15,6 +15,7 @@ function render(s){
  const {slot}=s;
  s.rendering=true;
  slot.querySelectorAll('.evidence-gallery,.evidence-tools,.evidence-remove').forEach(n=>n.remove());
+ slot.querySelectorAll('button').forEach(n=>{if(n.textContent.includes('حذف الصورة'))n.remove();});
  const original=slot.querySelector('span');if(original)original.style.display=s.items.length?'none':'';
  if(!s.items.length){slot.classList.add('empty');s.rendering=false;return;}
  slot.classList.remove('empty');
@@ -46,8 +47,12 @@ async function initSlot(slot){
  input.addEventListener('change',()=>{const files=Array.from(input.files||[]);input.value='';addFiles(s,files);});
  slot.append(input);
  slot.addEventListener('click',e=>{
-   if(e.target===input||e.target.closest('button,.evidence-tile,.evidence-tile-tools,.evidence-tools'))return;
-   e.preventDefault();e.stopImmediatePropagation();input.click();
+   if(e.target===input)return;
+   e.preventDefault();e.stopImmediatePropagation();
+   const tile=e.target.closest('.evidence-tile');
+   if(tile){slot.querySelectorAll('.evidence-tile').forEach(t=>t.classList.remove('evidence-selected'));tile.classList.add('evidence-selected');slot.classList.add('evidence-editing');return;}
+   if(e.target.closest('.evidence-tools,.evidence-tile-tools,button'))return;
+   input.click();
  },true);
  try{s.items=normalize(await read(s.key));}catch(e){console.warn('Cannot load evidence',e);}
  const existing=Array.from(slot.children).filter(n=>n.tagName==='IMG'&&n.src?.startsWith('data:image/'));
