@@ -22,3 +22,12 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot.evidence-editing .evidence-tools{display:block!important}
 .slot .evidence-tile.evidence-selected .evidence-tile-tools{display:flex!important}
 @media print{.slot .evidence-tile-tools,.slot .evidence-tools,.slot .evidence-remove{display:none!important}}
+
+/* Barcode images retain a white quiet zone for reliable camera scanning. */
+.slot .evidence-barcode{background:#fff;padding:5px;box-sizing:border-box}
+.slot .evidence-barcode>img{object-fit:contain!important;image-rendering:auto}
+.slot.empty .evidence-tools{display:flex!important}
+.slot.evidence-editing .evidence-tools{display:flex!important}
+.slot .evidence-tools{gap:3px;flex-wrap:wrap;max-width:95%}
+.slot .evidence-add-barcode{background:#fffef4}
+@media print{.slot.empty .evidence-tools,.slot.evidence-editing .evidence-tools{display:none!important}}
