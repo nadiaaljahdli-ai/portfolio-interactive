@@ -39,3 +39,8 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot .evidence-mini{min-width:28px!important;min-height:27px!important;font:bold 17px Arial!important;touch-action:manipulation}
 .slot .evidence-tile>img{max-width:100%!important;max-height:100%!important}
 @media print{.slot .evidence-tile-tools{display:none!important}}
+
+/* Direct manipulation for images and QR codes. */
+.slot .evidence-tile>img{touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;-webkit-user-drag:none!important;will-change:transform}
+.slot .evidence-tile{overflow:hidden!important}
+@media print{.slot .evidence-tile-tools,.slot .evidence-tools{display:none!important}}
