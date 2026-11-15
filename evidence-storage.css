@@ -67,3 +67,7 @@ section[id^="p"] .paper > .slot img{display:block;width:100%!important;height:10
 .slot .evidence-tile{overflow:visible!important;isolation:auto!important}
 .slot .evidence-tile>img{overflow:visible!important}
 .slot{overflow:hidden!important}
+
+#evidence-backup-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px auto 12px;padding:4px;direction:rtl}
+#evidence-backup-controls .evidence-backup-btn{background:#d9b55e;color:#112b4c;border:1px solid #b89646;border-radius:9px;padding:10px 13px;font:600 14px Arial,sans-serif;cursor:pointer}
+@media print{#evidence-backup-controls{display:none!important}}
