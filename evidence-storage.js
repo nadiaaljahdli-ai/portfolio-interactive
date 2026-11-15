@@ -81,7 +81,57 @@ async function initSlot(slot){
  });
  observer.observe(slot,{childList:true});
 }
-function scan(){document.querySelectorAll('.slot').forEach(initSlot);}
+function scan(){document.querySelectorAll('.slot').forEach(initSlot);setupBackup();}
+
+async function backupAll(){
+ const d=await db();
+ return new Promise((resolve,reject)=>{
+  const entries={};const tx=d.transaction(STORE,'readonly');const req=tx.objectStore(STORE).openCursor();
+  req.onsuccess=()=>{const cur=req.result;if(cur){if(String(cur.key).startsWith('evidence:'))entries[cur.key]=normalize(cur.value);cur.continue();}else resolve(entries);};
+  req.onerror=()=>reject(req.error);
+ });
+}
+async function exportBackup(){
+ try{
+  const entries=await backupAll();const count=Object.values(entries).reduce((n,a)=>n+a.length,0);
+  if(!count){alert('لا توجد صور أو باركودات محفوظة في هذا المتصفح. افتحي النسخة التي تحتوي على شواهدك.');return;}
+  const blob=new Blob([JSON.stringify({format:'portfolio-evidence-backup',version:1,created:new Date().toISOString(),entries})],{type:'application/json'});
+  const file=new File([blob],'شواهد-ملف-الإنجاز.json',{type:'application/json'});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   try{await navigator.share({files:[file],title:'نسخة احتياطية لشواهد الإنجاز'});return;}
+   catch(err){if(err.name==='AbortError')return;}
+  }
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  alert('تم تجهيز النسخة الاحتياطية. احتفظي بها في تطبيق الملفات ثم افتحي الموقع في Safari لاستيرادها.');
+ }catch(err){console.error(err);alert('تعذر تصدير النسخة الاحتياطية.');}
+}
+async function importBackup(file){
+ if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(data.format!=='portfolio-evidence-backup'||data.version!==1||!data.entries||typeof data.entries!=='object'||Array.isArray(data.entries))throw Error('Invalid backup');
+  const entries=Object.entries(data.entries);
+  if(!entries.length||entries.length>500||entries.some(([k,v])=>!/^evidence:[^:]+:\\d+$/.test(k)||!Array.isArray(v)||v.length>100||v.some(x=>!x||typeof x.src!=='string'||!/^data:image\\//.test(x.src))))throw Error('Invalid entries');
+  if(!confirm('سيتم استيراد الشواهد من النسخة الاحتياطية إلى هذا المتصفح. ستُستبدل الشواهد في المربعات المطابقة. هل تريدين المتابعة؟'))return;
+  const d=await db();
+  await new Promise((resolve,reject)=>{
+   const tx=d.transaction(STORE,'readwrite');for(const [key,items] of entries)tx.objectStore(STORE).put(normalize(items),key);
+   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+  });
+  alert('تم استيراد الشواهد بنجاح. ستُحدّث الصفحة لعرض الصور والباركودات.');location.reload();
+ }catch(err){console.error(err);alert('ملف النسخة الاحتياطية غير صالح أو تعذر استيراده. لم تُحذف بياناتك.');}
+}
+function setupBackup(){
+ if(document.getElementById('evidence-backup-controls'))return;
+ const wrap=document.createElement('div');wrap.id='evidence-backup-controls';
+ const out=button('⬇ تصدير الشواهد',exportBackup,'evidence-backup-btn');
+ const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.hidden=true;
+ inp.addEventListener('change',()=>{const file=inp.files?.[0];inp.value='';importBackup(file);});
+ const load=button('⬆ استيراد الشواهد',()=>inp.click(),'evidence-backup-btn');
+ wrap.append(out,load,inp);
+ const nav=document.querySelector('nav');if(nav)nav.insertAdjacentElement('afterend',wrap);else document.body.prepend(wrap);
+}
+
 document.addEventListener('click',e=>{if(!e.target.closest('.slot'))document.querySelectorAll('.slot.evidence-editing').forEach(s=>{s.classList.remove('evidence-editing');s.querySelectorAll('.evidence-selected').forEach(t=>t.classList.remove('evidence-selected'));});});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
 new MutationObserver(()=>scan()).observe(document.documentElement,{childList:true,subtree:true});
