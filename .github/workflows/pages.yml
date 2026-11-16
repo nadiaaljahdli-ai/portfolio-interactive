@@ -41,6 +41,13 @@ jobs:
               s, count = re.subn(r'</html\s*>', lambda m: inject + m.group(0), s, count=1, flags=re.I)
           if count != 1:
               raise SystemExit('HTML insertion point missing; refusing incomplete deployment')
+          import re as _re
+          # Diagnostic excerpt for identifying the original print and evidence rules.
+          css='\n'.join(_re.findall(r'<style[^>]*>(.*?)</style>',s,flags=_re.I|_re.S))
+          lines=css.splitlines()
+          matches=[(i,l) for i,l in enumerate(lines) if any(t in l.lower() for t in ['@media print','.slot','.paper','@page','print()'])]
+          out='\n'.join(str(i+1)+': '+l[:900] for i,l in matches[:130])
+          Path('print-diagnostics.txt').write_text(out[:20000],encoding='utf-8')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Configure Pages
