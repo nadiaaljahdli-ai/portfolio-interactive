@@ -124,7 +124,19 @@ function setupBackup(){
  const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.hidden=true;
  inp.addEventListener('change',()=>{const file=inp.files?.[0];inp.value='';importBackup(file);});
  const load=button('⬆ استيراد الشواهد',()=>inp.click(),'evidence-backup-btn');
- wrap.append(out,load,inp);
+ const diagnose=button('🔎 فحص الشواهد',async()=>{
+  try{
+   const entries=await backupAll();const slots=Array.from(document.querySelectorAll('.slot'));
+   const keys=slots.map(keyFor);const saved=Object.entries(entries).filter(([,v])=>v.length);
+   const matched=saved.filter(([k])=>keys.includes(k));
+   const visible=document.querySelectorAll('.slot .evidence-gallery .evidence-tile img').length;
+   const count=saved.reduce((n,[,v])=>n+v.length,0);
+   const example=saved.slice(0,3).map(([k,v])=>k+' ('+v.length+')').join('، ');
+   alert('تقرير الشواهد\\nالصور المحفوظة: '+count+'\\nالإطارات: '+slots.length+'\\nمفاتيح الحفظ المطابقة: '+matched.length+' من '+saved.length+'\\nالصور المعروضة: '+visible+'\\nمثال مفاتيح: '+(example||'لا يوجد')+'\\nعنوان الموقع: '+location.origin);
+  }catch(err){alert('تعذر فحص التخزين: '+err.message);}
+ },'evidence-backup-btn');
+
+ wrap.append(out,load,diagnose,inp);
  const nav=document.querySelector('nav');if(nav)nav.insertAdjacentElement('afterend',wrap);else document.body.prepend(wrap);
 }
 
