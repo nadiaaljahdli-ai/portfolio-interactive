@@ -81,7 +81,7 @@ async function initSlot(slot){
  });
  observer.observe(slot,{childList:true});
 }
-function scan(){document.querySelectorAll('.slot').forEach(initSlot);setupBackup();}
+function scan(){document.querySelectorAll('#pages .slot').forEach(initSlot);setupBackup();}
 
 async function backupAll(){
  const d=await db();
