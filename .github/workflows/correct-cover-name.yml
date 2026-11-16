@@ -16,10 +16,11 @@ jobs:
           from pathlib import Path
           p=Path('index.html');s=p.read_text()
           s=s.replace('<script src="./trainee-identity.js" defer></script>','')
-          tag='<script src="./cover-font-controls.js" defer></script>'
-          if tag not in s:
-              assert '</body>' in s
-              s=s.replace('</body>',tag+'\n</body>',1)
+          import re
+          s=re.sub(r'<script src="\./cover-font-controls\.js(?:\?v=[^\"]*)?" defer></script>', '', s)
+          tag='<script src="./cover-font-controls.js?v=20261116-12" defer></script>'
+          assert '</body>' in s
+          s=s.replace('</body>',tag+'\n</body>',1)
           p.write_text(s)
           assert tag in p.read_text()
           assert '<script src="./trainee-identity.js" defer></script>' not in p.read_text()
