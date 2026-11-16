@@ -1,0 +1,29 @@
+name: Inspect portfolio structure
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/inspect-structure.yml'
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text()
+          out=['bytes='+str(len(s)),'tail='+s[-11000:]]
+          for word in ['id="pages"','className=\'page\'','function makePage','const pages','localStorage','@media print','<button','id="print"']:
+            out.append(word+'='+str(s.find(word)))
+          Path('structure-report.txt').write_text('\n'.join(out))
+          PY
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add structure-report.txt
+          git diff --cached --quiet || git commit -m "Inspect portfolio markup"
+          git push
