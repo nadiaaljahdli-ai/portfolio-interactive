@@ -14,6 +14,6 @@
  #portfolio-print-root .slot .evidence-gallery{display:flex!important;visibility:visible!important;opacity:1!important}
  #portfolio-print-root .slot .evidence-tile{display:flex!important;visibility:visible!important;opacity:1!important}
  #portfolio-print-root .slot .evidence-tile > img{display:block!important;visibility:visible!important;opacity:1!important}
- #portfolio-print-root .slot.empty{display:none!important}
+ #portfolio-print-root .paper > .slot{top:34%!important;width:40%!important;height:26%!important;box-sizing:border-box!important;z-index:5!important}\n #portfolio-print-root .paper > .slot.right{left:auto!important;right:5%!important}\n #portfolio-print-root .paper > .slot.left{right:auto!important;left:5%!important}\n #portfolio-print-root .slot.empty{display:none!important}
  #portfolio-print-root button,#portfolio-print-root input,#portfolio-print-root .evidence-tools,#portfolio-print-root .evidence-tile-tools,#portfolio-print-root .placeholder{display:none!important}
 }
