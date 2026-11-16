@@ -17,9 +17,27 @@ function build(){
   }
   root.replaceChildren(fragment);
 }
+// Evidence is restored asynchronously from IndexedDB. Keep print copies in sync
+// with the original page DOM, without ever modifying the stored evidence.
+let refreshQueued=false;
+function refresh(){
+  if(refreshQueued)return;
+  refreshQueued=true;
+  setTimeout(()=>{refreshQueued=false;build();},60);
+}
+function watchEvidence(){
+  const pages=document.getElementById('pages');
+  if(!pages){setTimeout(watchEvidence,150);return;}
+  new MutationObserver(records=>{
+    if(records.some(r=>r.target.closest?.('.slot') || Array.from(r.addedNodes||[]).some(n=>n.nodeType===1&&(n.matches?.('.slot,.evidence-gallery,.evidence-tile')||n.querySelector?.('.evidence-gallery')))))refresh();
+  }).observe(pages,{subtree:true,childList:true,attributes:true,attributeFilter:['src','class']});
+  refresh();
+}
 window.addEventListener('beforeprint',build);
+window.addEventListener('focus',refresh);
+window.addEventListener('pageshow',refresh);
 document.addEventListener('click',e=>{
   if(e.target.closest('button')?.textContent?.trim()==='PDF')build();
 },true);
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{build();watchEvidence();});else{build();watchEvidence();}
 })();
