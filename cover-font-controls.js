@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const KEY='male-cover-school', SIZE='male-cover-font-size-v2';
+const KEY='male-cover-school', NAME='male-cover-name-v3', SIZE='male-cover-font-size-v2';
 let fontSize=16;try{fontSize=Math.max(12,Math.min(30,Number(localStorage.getItem(SIZE)||16)))}catch(e){}
 const style=document.createElement('style');
 style.textContent=`
@@ -25,8 +25,8 @@ document.querySelectorAll('.page-block[data-n="1"] .paper').forEach(paper=>{
  if(paper.querySelector('.cover-fields'))return;
  const old=paper.querySelector('input.cover-name');if(!old)return;
  const panel=document.createElement('div');panel.className='cover-fields';
- function row(label,input){const pill=document.createElement('div');pill.className='cover-pill';const caption=document.createElement('span');caption.className='cover-label';caption.textContent=label+' /';const printed=document.createElement('div');printed.className='cover-print-value';printed.contentEditable='true';printed.setAttribute('role','textbox');printed.setAttribute('aria-label',label);printed.setAttribute('dir','rtl');printed.textContent=input.value||'';printed.addEventListener('input',()=>{input.value=printed.textContent||'';input.dispatchEvent(new Event('input',{bubbles:true}))});pill.append(caption,input,printed);panel.append(pill)}
- old.placeholder='';old.setAttribute('aria-label','الاسم');row('الاسم',old);
+ function row(label,input){const pill=document.createElement('div');pill.className='cover-pill';const caption=document.createElement('span');caption.className='cover-label';caption.textContent=label+' /';const printed=document.createElement('div');printed.className='cover-print-value';printed.contentEditable='true';printed.setAttribute('role','textbox');printed.setAttribute('aria-label',label);printed.setAttribute('dir','rtl');printed.textContent=input.value||'';printed.addEventListener('input',()=>{input.value=printed.textContent||'';try{localStorage.setItem(label==='الاسم'?NAME:KEY,input.value)}catch(e){}input.dispatchEvent(new Event('input',{bubbles:true}))});pill.append(caption,input,printed);panel.append(pill)}
+ old.placeholder='';old.setAttribute('aria-label','الاسم');try{if(localStorage.getItem(NAME)!==null)old.value=localStorage.getItem(NAME)}catch(e){}row('الاسم',old);
  const school=document.createElement('input');school.type='text';school.className='cover-school';school.setAttribute('aria-label','المدرسة');school.autocomplete='organization';
  try{school.value=localStorage.getItem(KEY)||''}catch(e){}
  school.addEventListener('input',()=>{try{localStorage.setItem(KEY,school.value)}catch(e){}});
@@ -39,8 +39,9 @@ new MutationObserver(records=>{
  if(!records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches?.('.page-block')||n.querySelector?.('.page-block')))))return;
  scheduled=true;requestAnimationFrame(()=>{scheduled=false;setup()});
 }).observe(document.body,{childList:true,subtree:true});
-function syncPrint(){document.querySelectorAll('.cover-pill').forEach(pill=>{const input=pill.querySelector('input');const text=pill.querySelector('.cover-print-value');if(input&&text&&document.activeElement!==text)text.textContent=input.value||''})}
+function syncPrint(){document.querySelectorAll('.cover-pill').forEach(pill=>{const input=pill.querySelector('input');const text=pill.querySelector('.cover-print-value');if(input&&text){input.value=text.textContent||'';try{localStorage.setItem(input.classList.contains('cover-name')?NAME:KEY,input.value)}catch(e){}}})}
 window.addEventListener('beforeprint',syncPrint);
+document.addEventListener('click',e=>{if(e.target.closest('button')?.textContent?.includes('حفظ'))syncPrint()},true);
 document.getElementById('print')?.addEventListener('click',syncPrint,true);
 apply();setup();
 })();
