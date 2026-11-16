@@ -5,7 +5,7 @@
  nav,header,footer,.nav,.toolbar,.actions,.evidence-tools,.evidence-tile-tools,.evidence-remove,.evidence-add,button{display:none!important}
  section[id^="p"]{display:block!important;position:relative!important;box-sizing:border-box!important;width:164mm!important;height:231mm!important;min-height:0!important;max-height:231mm!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;break-inside:avoid!important;page-break-inside:avoid!important;break-after:page!important;page-break-after:always!important}
  section[id^="p"] > :not(.paper){display:none!important}
- section[id^="p"] .paper{position:relative!important;box-sizing:border-box!important;width:203mm!important;height:295mm!important;max-height:295mm!important;margin:0!important;left:0!important;transform:scale(.78)!important;transform-origin:top left!important;padding:0!important;box-shadow:none!important;overflow:hidden!important;break-inside:avoid!important}
+ section[id^="p"] .paper{position:absolute!important;top:0!important;right:auto!important;box-sizing:border-box!important;width:203mm!important;height:295mm!important;max-height:295mm!important;margin:0!important;left:0!important;transform:scale(.78)!important;transform-origin:top left!important;padding:0!important;box-shadow:none!important;overflow:hidden!important;break-inside:avoid!important}
  section[id^="p"] .paper > img:first-child{display:block!important;width:100%!important;height:100%!important;object-fit:fill!important}
  section[id^="p"] .paper > .slot{overflow:hidden!important}
 
