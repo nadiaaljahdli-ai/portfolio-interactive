@@ -52,7 +52,9 @@ async function syncPrintEvidence(){
   const targetSlots=Array.from(copies[p].querySelectorAll('.paper > .slot'));
   for(let i=0;i<Math.min(sourceSlots.length,targetSlots.length);i++){
    const section=originals[p];
-   const key='evidence:'+(section.getAttribute('data-page')||section.id||'page')+':'+i;
+   const source=sourceSlots[i];
+   const owner=source.closest('[data-page],.page,.sheet,section')||source.parentElement;
+   const key='evidence:'+(owner?.getAttribute('data-page')||owner?.id||'page')+':'+Array.from(owner.querySelectorAll('.slot')).indexOf(source);
    let items;
    try{items=await new Promise((resolve,reject)=>{const request=database.transaction('images','readonly').objectStore('images').get(key);request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}catch(e){continue;}
    if(token!==evidenceSyncId)break;
@@ -73,12 +75,31 @@ async function syncPrintEvidence(){
  }
  database.close();
 }
-function buildAndSync(){build();syncPrintEvidence();}
-window.addEventListener('beforeprint',buildAndSync);
+async function buildAndSync(){build();await syncPrintEvidence();}
+let printing=false;
+window.addEventListener('beforeprint',()=>{
+ // The PDF button prepares the entire print tree before invoking window.print().
+ // Never rebuild it here: rebuilding would discard asynchronously restored evidence.
+ if(!root?.querySelector('.portfolio-print-sheet'))build();
+});
 window.addEventListener('focus',()=>{refresh();setTimeout(syncPrintEvidence,150);});
 window.addEventListener('pageshow',()=>{refresh();setTimeout(syncPrintEvidence,150);});
-document.addEventListener('click',e=>{
-  if(e.target.closest('button')?.textContent?.trim()==='PDF')buildAndSync();
+document.addEventListener('click',async e=>{
+ const button=e.target.closest('button');
+ if(button?.textContent?.trim()!=='PDF')return;
+ e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+ if(printing)return;
+ printing=true;
+ const label=button.textContent;button.disabled=true;button.textContent='جارٍ تجهيز الشواهد…';
+ try{
+  await buildAndSync();
+  const imgs=Array.from(root.querySelectorAll('.evidence-gallery img'));
+  await Promise.all(imgs.map(img=>img.decode?.().catch(()=>{})||Promise.resolve()));
+  // Let Safari commit the updated print DOM before presenting the native preview.
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  window.print();
+ }catch(err){console.error('Print preparation failed',err);alert('تعذر تجهيز الشواهد للطباعة. لم تتغير البيانات المحفوظة.');}
+ finally{printing=false;button.disabled=false;button.textContent=label;}
 },true);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{buildAndSync();watchEvidence();});else{buildAndSync();watchEvidence();}
 })();
