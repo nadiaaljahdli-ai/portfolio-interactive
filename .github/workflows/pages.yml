@@ -35,7 +35,7 @@ jobs:
               s = s.replace(old, new, 1)
               s = s.replace('.nav.open{transform:translateX(0)}', '.nav.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0008}', 1)
           import re
-          inject = '<link rel="stylesheet" href="evidence-storage.css?v=14"><link rel="stylesheet" href="print-fix.css?v=8"><script src="evidence-storage.js?v=17" defer></script><link rel="stylesheet" href="isolated-print.css?v=2"><script src="isolated-print.js?v=2" defer></script>'
+          inject = '<link rel="stylesheet" href="evidence-storage.css?v=14"><link rel="stylesheet" href="print-fix.css?v=8"><script src="evidence-storage.js?v=17" defer></script><link rel="stylesheet" href="isolated-print.css?v=2"><script src="isolated-print.js?v=3" defer></script>'
           s, count = re.subn(r'</body\s*>', lambda m: inject + m.group(0), s, count=1, flags=re.I)
           if count != 1:
               s, count = re.subn(r'</html\s*>', lambda m: inject + m.group(0), s, count=1, flags=re.I)
