@@ -48,6 +48,7 @@ jobs:
           matches=[(i,l) for i,l in enumerate(lines) if any(t in l.lower() for t in ['@media print','.slot','.paper','@page','print()'])]
           out='\n'.join(str(i+1)+': '+l[:900] for i,l in matches[:130])
           Path('print-diagnostics.txt').write_text(out[:20000],encoding='utf-8')
+          print('PRINT_DIAGNOSTICS_START\\n'+out[:12000]+'\\nPRINT_DIAGNOSTICS_END')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Configure Pages
