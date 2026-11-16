@@ -28,14 +28,14 @@ open.onclick=()=>{panel.style.display='flex'};panel.querySelector('#identity-clo
 function update(){
 document.querySelectorAll('.identity-text').forEach(n=>n.remove());
 const roots=[document.getElementById('pages'),document.getElementById('printRoot')].filter(Boolean);
-roots.forEach(root=>{const sheets=[...root.querySelectorAll('.sheet')];if(!sheets.length)return;
-function put(index,cls,txt){const sheet=sheets[index];if(!sheet)return;const page=sheet.querySelector('.page')||sheet;const n=document.createElement('div');n.className='identity-text '+cls;n.textContent=txt;page.append(n)}
-if(data.name||data.school)put(0,'identity-cover',[data.name,data.school].filter(Boolean).join(' — '));
+roots.forEach(root=>{const sheets=[...root.querySelectorAll('.sheet, .page-block')];if(!sheets.length)return;
+function put(index,cls,txt){const sheet=sheets[index];if(!sheet)return;const page=sheet.querySelector('.page, .paper')||sheet;const n=document.createElement('div');n.className='identity-text '+cls;n.textContent=txt;page.append(n)}
+if(data.name||data.school){const old=sheets[0].querySelector('.cover-name');if(old){old.value=data.name||'';old.style.display='none'}put(0,'identity-cover',[data.name,data.school].filter(Boolean).join(' — '));}
 const lines=fields.map(([k,label])=>data[k]?label+' : '+data[k]:null).filter(Boolean);
 if(lines.length)put(Math.max(1,Math.min(22,Number(data.personalPage||5)-1)),'identity-personal',lines.join('\n'));
 });
 }
 panel.querySelector('#identity-save').onclick=()=>{fields.forEach(([k])=>data[k]=panel.querySelector('[data-key="'+k+'"]').value.trim());data.personalPage=Number(sel.value);try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){alert('تعذر حفظ البيانات: مساحة التخزين ممتلئة');return}update();panel.style.display='none'};
-let pending=false;const observer=new MutationObserver(mutations=>{if(pending)return;if(!mutations.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&(n.matches?.('.sheet')||n.querySelector?.('.sheet')))))return;pending=true;requestAnimationFrame(()=>{pending=false;update()})});
+let pending=false;const observer=new MutationObserver(mutations=>{if(pending)return;if(!mutations.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&(n.matches?.('.sheet, .page-block')||n.querySelector?.('.sheet, .page-block')))))return;pending=true;requestAnimationFrame(()=>{pending=false;update()})});
 observer.observe(document.body,{childList:true,subtree:true});update();window.addEventListener('beforeprint',update);
 })();
