@@ -9,8 +9,8 @@ style.textContent=`
 .paper .cover-fields .cover-label{flex:0 0 auto;color:#102c4e;font-family:Tahoma,Arial,sans-serif;font-size:clamp(10px,2.2vw,18px);font-weight:700;white-space:nowrap}
 .paper .cover-fields input.cover-name,.paper .cover-fields input.cover-school{position:static!important;inset:auto!important;top:auto!important;bottom:auto!important;left:auto!important;right:auto!important;display:block!important;flex:1 1 0!important;width:0!important;max-width:none!important;min-width:0!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;color:#102c4e!important;text-align:right!important;direction:rtl!important;font-family:Tahoma,Arial,sans-serif!important;font-size:var(--male-cover-font-size,16px)!important;font-weight:700!important;line-height:normal!important;box-sizing:border-box!important}
 .paper .cover-fields input::placeholder{color:transparent!important}
-.paper .cover-fields .cover-print-value{display:none;flex:1;min-width:0;text-align:right;direction:rtl;color:#102c4e;font-family:Tahoma,Arial,sans-serif;font-weight:700;font-size:var(--male-cover-font-size,16px);white-space:nowrap;overflow:hidden}
-@media print{.paper .cover-fields input.cover-name,.paper .cover-fields input.cover-school{display:none!important}.paper .cover-fields .cover-print-value{display:block!important}}
+.paper .cover-fields .cover-print-value{display:block!important;flex:1;min-width:0;text-align:right;direction:rtl;color:#102c4e;font-family:Tahoma,Arial,sans-serif;font-weight:700;font-size:var(--male-cover-font-size,16px);white-space:nowrap;overflow:hidden;outline:none;min-height:1.4em}
+.paper .cover-fields input.cover-name,.paper .cover-fields input.cover-school{display:none!important}@media print{.paper .cover-fields .cover-print-value{display:block!important}}
 #cover-font-tools{position:fixed;right:12px;bottom:16px;z-index:9999;display:flex;gap:7px;align-items:center;background:#fff;border:1px solid #bbb;border-radius:12px;padding:7px;box-shadow:0 2px 12px #0003;direction:rtl}
 #cover-font-tools button{border:0;border-radius:8px;background:#102f55;color:#fff;font-size:19px;min-width:38px;height:36px;padding:0}
 #cover-font-tools span{font-size:12px;color:#24314a}
@@ -25,7 +25,7 @@ document.querySelectorAll('.page-block[data-n="1"] .paper').forEach(paper=>{
  if(paper.querySelector('.cover-fields'))return;
  const old=paper.querySelector('input.cover-name');if(!old)return;
  const panel=document.createElement('div');panel.className='cover-fields';
- function row(label,input){const pill=document.createElement('div');pill.className='cover-pill';const caption=document.createElement('span');caption.className='cover-label';caption.textContent=label+' /';const printed=document.createElement('span');printed.className='cover-print-value';printed.textContent=input.value||'';input.addEventListener('input',()=>printed.textContent=input.value||'');pill.append(caption,input,printed);panel.append(pill)}
+ function row(label,input){const pill=document.createElement('div');pill.className='cover-pill';const caption=document.createElement('span');caption.className='cover-label';caption.textContent=label+' /';const printed=document.createElement('div');printed.className='cover-print-value';printed.contentEditable='true';printed.setAttribute('role','textbox');printed.setAttribute('aria-label',label);printed.setAttribute('dir','rtl');printed.textContent=input.value||'';printed.addEventListener('input',()=>{input.value=printed.textContent||'';input.dispatchEvent(new Event('input',{bubbles:true}))});pill.append(caption,input,printed);panel.append(pill)}
  old.placeholder='';old.setAttribute('aria-label','الاسم');row('الاسم',old);
  const school=document.createElement('input');school.type='text';school.className='cover-school';school.setAttribute('aria-label','المدرسة');school.autocomplete='organization';
  try{school.value=localStorage.getItem(KEY)||''}catch(e){}
@@ -39,7 +39,7 @@ new MutationObserver(records=>{
  if(!records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches?.('.page-block')||n.querySelector?.('.page-block')))))return;
  scheduled=true;requestAnimationFrame(()=>{scheduled=false;setup()});
 }).observe(document.body,{childList:true,subtree:true});
-function syncPrint(){document.querySelectorAll('.cover-pill').forEach(pill=>{const input=pill.querySelector('input');const text=pill.querySelector('.cover-print-value');if(input&&text)text.textContent=input.value||''})}
+function syncPrint(){document.querySelectorAll('.cover-pill').forEach(pill=>{const input=pill.querySelector('input');const text=pill.querySelector('.cover-print-value');if(input&&text&&document.activeElement!==text)text.textContent=input.value||''})}
 window.addEventListener('beforeprint',syncPrint);
 document.getElementById('print')?.addEventListener('click',syncPrint,true);
 apply();setup();
