@@ -1,10 +1,10 @@
 /* Safari printing is isolated from the interactive DOM. */
-#portfolio-print-root{display:none}
+#portfolio-print-root{display:block;position:absolute;left:-20000px;top:0;width:198mm;visibility:visible;pointer-events:none;overflow:hidden}
 @page{size:A4 portrait;margin:0}
 @media print{
  html,body{margin:0!important;padding:0!important;width:210mm!important;max-width:none!important;overflow:visible!important;background:white!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
  body > :not(#portfolio-print-root){display:none!important}
- #portfolio-print-root{display:block!important;position:static!important;width:198mm!important;margin:0!important;padding:0!important;overflow:visible!important}
+ #portfolio-print-root{display:block!important;position:static!important;left:auto!important;top:auto!important;width:198mm!important;margin:0!important;padding:0!important;overflow:visible!important;pointer-events:none!important}
  #portfolio-print-root .portfolio-print-sheet{display:block!important;position:relative!important;box-sizing:border-box!important;width:198mm!important;height:280mm!important;min-height:0!important;max-height:280mm!important;margin:0!important;padding:0!important;overflow:hidden!important;break-after:page!important;page-break-after:always!important;break-inside:avoid!important;page-break-inside:avoid!important}
  #portfolio-print-root .portfolio-print-sheet:last-child{break-after:auto!important;page-break-after:auto!important}
  #portfolio-print-root .portfolio-print-sheet > .paper,
@@ -14,6 +14,9 @@
  #portfolio-print-root .slot .evidence-gallery{display:flex!important;visibility:visible!important;opacity:1!important}
  #portfolio-print-root .slot .evidence-tile{display:flex!important;visibility:visible!important;opacity:1!important}
  #portfolio-print-root .slot .evidence-tile > img{display:block!important;visibility:visible!important;opacity:1!important}
- #portfolio-print-root .paper > .slot{top:34%!important;width:40%!important;height:26%!important;box-sizing:border-box!important;z-index:5!important}\n #portfolio-print-root .paper > .slot.right{left:auto!important;right:5%!important}\n #portfolio-print-root .paper > .slot.left{right:auto!important;left:5%!important}\n #portfolio-print-root .slot.empty{display:none!important}
+ #portfolio-print-root .paper > .slot{top:34%!important;width:40%!important;height:26%!important;box-sizing:border-box!important;z-index:5!important}
+ #portfolio-print-root .paper > .slot.right{left:auto!important;right:5%!important}
+ #portfolio-print-root .paper > .slot.left{right:auto!important;left:5%!important}
+ #portfolio-print-root .slot.empty{display:none!important}
  #portfolio-print-root button,#portfolio-print-root input,#portfolio-print-root .evidence-tools,#portfolio-print-root .evidence-tile-tools,#portfolio-print-root .placeholder{display:none!important}
 }
