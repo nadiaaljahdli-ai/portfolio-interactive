@@ -1,0 +1,34 @@
+name: Enable editable trainee identity
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/enable-trainee-identity.yml'
+permissions:
+  contents: write
+jobs:
+  enable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Link identity editor to portfolio
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="./trainee-identity.js" defer></script>'
+          if tag not in s:
+              assert '</body>' in s
+              s=s.replace('</body>',tag+'\n</body>',1)
+              p.write_text(s,encoding='utf-8')
+          assert tag in p.read_text(encoding='utf-8')
+          print('Identity editor script linked')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Enable trainee identity editing on cover and profile"
+          git push
