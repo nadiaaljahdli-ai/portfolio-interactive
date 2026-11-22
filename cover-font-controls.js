@@ -47,3 +47,5 @@ document.addEventListener('click',e=>{if(e.target.closest('button')?.textContent
 document.getElementById('print')?.addEventListener('click',syncPrint,true);
 apply();setup();
 })();
+/* Personal-data page: conceal the unused side frames beneath the editable fields. */
+(()=>{const s=document.createElement('style');s.textContent='.extra-block[data-extra="personal"] .extra-fields{right:5.5%!important;left:5.5%!important;top:33%!important;bottom:16%!important;background:#fff!important;padding:2.5% 5%!important;box-sizing:border-box!important;align-content:start!important}.extra-block[data-extra="personal"] .extra-field{background:#fff!important}@media print{.extra-block[data-extra="personal"] .extra-fields{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}';document.head.append(s)})();
