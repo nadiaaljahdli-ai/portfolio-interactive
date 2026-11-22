@@ -1,0 +1,21 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تجربة نشر ملف الإنجاز</title><style>*{box-sizing:border-box}body{margin:0;background:#e9eef5;color:#0b2748;font-family:Tahoma,Arial,sans-serif;padding:18px}main{max-width:650px;margin:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 4px 20px #0001}h1{font-size:23px}label{display:block;margin:18px 0 6px;font-weight:bold}input{width:100%;padding:12px;border:1px solid #b5c0d0;border-radius:8px;font:inherit}button{background:#0a2c51;color:white;padding:13px 16px;border:0;border-radius:9px;margin-top:14px;font:inherit;font-weight:bold}.note{background:#fff5df;padding:13px;border-radius:9px;line-height:1.9;font-size:14px}#result{margin-top:18px;line-height:1.9;overflow-wrap:anywhere}.ok{background:#eef8ef;padding:12px;border-radius:8px}.err{background:#fff0f0;padding:12px;border-radius:8px}a{display:inline-block;margin-top:8px}</style><main><h1>تجربة النشر برابط قصير</h1><p class="note">هذه تجربة منفصلة عن ملف الإنجاز الأصلي. الصورة تُرفع إلى تخزين خاص، والرابط الناتج لا يحتوي الصورة داخله.</p><label>اسم تجريبي</label><input id="owner" value="نادية"><label>عنوان الشاهد</label><input id="title" value="ملف الإنجاز"><label>صورة شاهد تجريبية</label><input id="image" type="file" accept="image/jpeg,image/png,image/webp"><button id="publish">نشر وإنشاء رابط العرض</button><div id="result"></div></main><script>
+const API="https://rzovpzlhqwyuerjapxjl.supabase.co/functions/v1/portfolio-share-api";
+const result=document.getElementById("result");
+document.getElementById("publish").onclick=async()=>{
+ const owner=document.getElementById("owner").value.trim(),title=document.getElementById("title").value.trim(),image=document.getElementById("image").files[0];
+ if(!owner||!title||!image){alert("أدخلي الاسم والعنوان واختاري صورة");return}
+ if(image.size>5*1024*1024){alert("حجم الصورة يجب ألا يتجاوز 5 ميجابايت");return}
+ result.className="";result.textContent="جارٍ رفع الصورة وإنشاء الرابط...";
+ const fd=new FormData();fd.append("owner_name",owner);fd.append("title",title);fd.append("school_name","");fd.append("template","male");fd.append("image",image);
+ try{
+  const r=await fetch(API+"?action=create",{method:"POST",body:fd});
+  const data=await r.json();
+  if(!r.ok)throw new Error(data.error||"تعذر النشر");
+  result.className="ok";result.replaceChildren();
+  const p=document.createElement("p");p.textContent="تم النشر. رابط العرض قصير وجاهز:";
+  const a=document.createElement("a");a.href=data.view_url;a.target="_blank";a.rel="noopener";a.textContent=data.view_url;
+  const b=document.createElement("button");b.textContent="نسخ رابط العرض";b.onclick=()=>navigator.clipboard.writeText(data.view_url).then(()=>alert("تم النسخ")).catch(()=>prompt("انسخي الرابط:",data.view_url));
+  result.append(p,a,document.createElement("br"),b);
+  localStorage.setItem("portfolio_test_edit_token",data.edit_token||"");
+ }catch(e){result.className="err";result.textContent="تعذر النشر: "+e.message}
+};</script></html>
